@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Real-time tracker of French public debt with per capita and interest calculations." />
+    <meta name="keywords" content="French public debt, real-time debt tracker, finance" />
+    <title>Dette publique française en temps réel</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest">
+    <script src="https://cdn.tailwindcss.com"></script>    
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="text-white relative min-h-screen">
+
+    <!-- Background image -->
+    <div id="background" class="fixed inset-0 bg-cover bg-center z-0" style="background-image: url('images/bercy-1.jpg');"></div>
+    
+    <!-- Overlay content -->
+    <div class="overlay relative z-10 flex flex-col items-center min-h-screen p-4 bg-black/40 pb-20" role="region" aria-live="polite">
+
+    <!-- Row 1: Total Debt -->
+    <div class="help-trigger w-full max-w-3xl mb-6 cursor-pointer">
+      <div class="bg-white/10 p-6 rounded-lg shadow-md text-center hover:bg-white/20 transition">
+        <div id="title" class="text-2xl md:text-3xl font-semibold mb-2">
+          Dette publique française en temps réel
+        </div>
+        <div id="debt" class="font-extrabold card-number text-3xl sm:text-3xl md:text-5xl lg:text-6xl text-center"></div>
+      </div>
+    </div>
+
+    <!-- Row 2: Debt per capita & per taxpayer -->
+    <div class="help-trigger grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl mb-6 cursor-pointer">
+      <div class="bg-white/10 p-4 rounded-lg shadow-md text-center hover:bg-white/20 transition">
+        <div class="text-sm md:text-base mb-1" id="labelPerCapita">Dette par habitant</div>
+        <div id="perCapita" class="font-extrabold card-number text-2xl sm:text-2xl md:text-3xl lg:text-4xl text-center"></div>
+      </div>
+      <div class="bg-white/10 p-4 rounded-lg shadow-md text-center hover:bg-white/20 transition">
+        <div class="text-sm md:text-base mb-1" id="labelPerHousehold">Dette par foyer fiscal imposable</div>
+        <div id="perTaxpayingHousehold" class="font-extrabold card-number text-2xl sm:text-2xl md:text-3xl lg:text-4xl text-center"></div>
+      </div>
+    </div>
+
+    <!-- Row 3: Debt increase per day & per second -->
+    <div class="help-trigger grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl mb-12 cursor-pointer">
+      <div class="bg-white/10 p-4 rounded-lg shadow-md text-center hover:bg-white/20 transition">
+        <div class="text-sm md:text-base mb-1" id="labelPerDay">Augmentation par jour</div>
+        <div id="perDay" class="font-extrabold card-number text-2xl sm:text-2xl md:text-3xl lg:text-4xl text-center"></div>
+      </div>
+      <div class="bg-white/10 p-4 rounded-lg shadow-md text-center hover:bg-white/20 transition">
+        <div class="text-sm md:text-base mb-1" id="labelPerSecond">Augmentation par seconde</div>
+        <div id="perSecond" class="font-extrabold card-number text-2xl sm:text-2xl md:text-3xl lg:text-4xl text-center"></div>
+      </div>
+    </div>
+
+    <!-- Row 4: Interest input -->
+    <div class="flex flex-col items-center mb-12 w-full max-w-md">
+      <span class="mb-2">
+      <label for="interestRate" class="mb-2 font-semibold" id="interestLabel">Taux d'intérêt moyen sur la dette française</label>
+        <span>(<span id="interestValue" class="font-bold"></span>)</span>
+      </span>
+      <input
+        type="range"
+        id="interestRate"
+        min="0" max="15" step="0.05" value="2.5"
+        class="w-full h-2 mb-6 bg-gray-400 rounded-lg accent-blue-600 appearance-none" aria-valuemin="0" aria-valuemax="15" aria-valuenow="2.5" />
+    </div>
+
+    <!-- Interest table -->
+    <h2 id="interestTitle" class="text-xl font-semibold text-center mb-4">Coût de la charge de la dette (intérêts payés)</h2>
+    <div class="overflow-x-auto w-full max-w-3xl mb-6">
+      <table class="table-fixed w-full border-collapse border border-gray-600 text-center text-sm md:text-base">
+        <thead class="bg-gray-700">
+          <tr>
+            <th class="border border-gray-600 px-2 py-2">Période</th>
+            <th class="border border-gray-600 px-2 py-2">Total</th>
+            <th class="border border-gray-600 px-2 py-2">Par habitant</th>
+            <th class="border border-gray-600 px-2 py-2">Par foyer fiscal</th>
+          </tr>
+        </thead>
+        <tbody id="interestTableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Language toggle -->
+    <div class="controls flex justify-center mt-4">
+      <button id="langBtn" class="lang-btn" aria-label="Toggle language">
+        <img id="flagIcon" src="images/flag-us.svg" alt="EN" />
+        <span id="langBtnText">English</span>
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="fixed bottom-0 left-0 w-full bg-black/50 text-white py-2 z-20">
+      <div class="flex items-center justify-between px-4">
+
+        <!-- Left: WordPress link -->
+        <a href="https://www.linkedin.com/in/nicolas-lequeux-5b02806" target="_blank" class="flex items-center gap-1 hover:text-gray-300">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4.98 3.5C3.33 3.5 2 4.83 2 6.48c0 1.65 1.33 2.98 2.98 2.98 1.65 0 2.98-1.33 2.98-2.98C7.96 4.83 6.63 3.5 4.98 3.5zM2.4 21h5.16v-11H2.4v11zm7.92-11h4.94v1.53h.07c.69-1.31 2.38-2.69 4.9-2.69 5.24 0 6.2 3.45 6.2 7.92v8.24h-5.16v-7.3c0-1.74-.03-3.98-2.42-3.98-2.42 0-2.79 1.89-2.79 3.85v7.43h-5.15V10z"/>
+          </svg>
+        </a>
+
+        <!-- Center: Made with love -->
+        <span class="text-center">Made with <span class="text-red-600 animate-pulse">❤</span> by Nicolas</span>
+
+        <!-- Right: LinkedIn link -->
+        <a href="https://nlxfinance.wordpress.com/" target="_blank" class="flex items-center gap-1 hover:text-gray-300">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.372 0 0 5.372 0 12c0 6.627 5.372 12 12 12s12-5.373 12-12c0-6.628-5.372-12-12-12zm0 1.8c1.9 0 3.64.682 4.978 1.814-2.204.184-4.39 2.6-5.866 6.094-1.476 3.494-1.582 6.332-1.582 6.332-.566-1.7-1.2-4.194-1.2-4.194C7.383 8.79 9.556 1.8 12 1.8zm4.878 2.632a9.998 9.998 0 0 0-3.356 5.586c1.02-2.66 2.994-5.3 3.356-5.586zM12 22.2c-5.655 0-10.2-4.545-10.2-10.2 0-1.072.15-2.105.432-3.076 1.826 3.018 5.37 9.446 5.37 9.446s1.693-3.05 2.688-4.757c.995-1.707 1.776-2.686 1.776-2.686s1.003 3.922 3.378 7.07c.162-.317.325-.638.49-.96-.808-1.416-2.308-3.57-2.308-3.57s2.373-1.898 4.66-2.618c.34.734.528 1.518.528 2.342 0 5.654-4.546 10.2-10.2 10.2z"/>
+          </svg>
+        </a>
+
+      </div>
+    </footer>
+
+    <!-- Modal container -->
+    <div id="helpModal" class="hidden fixed inset-0 bg-black/50 z-50 overflow-auto p-4">
+      <!-- Modal content -->
+      <div class="relative bg-white text-black rounded-lg max-w-3xl w-full mx-auto my-10 p-6">
+        <!-- Close button -->
+        <button
+          id="closeModal"
+          class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-black text-xl font-bold hover:bg-gray-400 transition"
+        >
+          &times;
+        </button>
+        <!-- Modal title -->
+        <h2 id="modalTitle" class="text-xl font-semibold mb-4 text-left"></h2>
+        <!-- Modal body -->
+        <div id="modalBody" class="overflow-y-auto max-h-[70vh] text-left space-y-4"></div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  
+  </body>
+</html>

@@ -1,0 +1,108 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: white;
+    text-align: center;
+    overflow: visible;
+}
+
+#background {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    object-fit: cover;
+}
+
+#background::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.overlay {
+    position: relative;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+.controls {
+    margin: 1rem 0;
+}
+
+button {
+    margin: 0.3rem;
+    padding: 1rem 1rem;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: rgba(255, 255, 255, 0.4);
+    padding: 0rem 0.5rem;
+}
+
+.lang-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.lang-btn img {
+    width: 24px;
+    height: 16px;
+    object-fit: cover;
+    border: 1px solid white;
+    border-radius: 2px;
+}
+
+.card-number,
+table td.number {
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+table td,
+table th {
+    padding: 0.5rem;
+    text-align: center;
+}
+
+/* Make table responsive on mobile */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table td.number {
+    word-break: break-word;
+    /* Allow long numbers to wrap */
+    white-space: normal;
+    /* Ensure text wraps within cells */
+}
+
+@media (max-width: 640px) {
+    table {
+        font-size: 0.75rem;
+        /* Smaller font size on mobile */
+    }
+
+    table td,
+    table th {
+        padding: 0.25rem;
+        /* Reduce padding on mobile */
+    }
+
+    table td.number {
+        min-width: 60px;
+        /* Minimum width to prevent excessive squeezing */
+    }
+}
