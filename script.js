@@ -111,6 +111,9 @@ const DebtApp = (() => {
         <p>Total public debt amount: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(
           CONFIG.CURRENT_DEBT_VALUE * CONFIG.EXCHANGE_RATE
         )} at the date of ${new Date(CONFIG.CURRENT_DEBT_DATE).toLocaleDateString("en-US")}</p>
+        <p>EUR/USD exchange rate: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 4 }).format(
+          CONFIG.EXCHANGE_RATE
+        )}</p>
         <p>Average monthly debt increase: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(
           CONFIG.DEBT_INCREASE_PER_MONTH * CONFIG.EXCHANGE_RATE
         )} per month 🚀</p>
@@ -239,15 +242,28 @@ const DebtApp = (() => {
     // Interest slider
     elements.interestRate.value = interestRate;
     elements.interestValue.textContent = `${interestRate.toFixed(2)}%`;
+
+    const updateInterestRate = (val) => {
+      interestRate = Math.max(0, val); // prevent negatives
+      elements.interestValue.textContent = `${interestRate.toFixed(2)}%`;
+      elements.interestRate.value = interestRate;
+      elements.interestRate.setAttribute("aria-valuenow", interestRate.toFixed(2));
+      lastUpdate = 0;
+    };
+
     elements.interestRate.addEventListener(
       "input",
-      debounce((e) => {
-        interestRate = parseFloat(e.target.value) || 0;
-        elements.interestValue.textContent = `${interestRate.toFixed(2)}%`;
-        elements.interestRate.setAttribute("aria-valuenow", interestRate.toFixed(2));
-        lastUpdate = 0;
-      }, 100)
+      debounce((e) => updateInterestRate(parseFloat(e.target.value) || 0), 100)
     );
+
+    // NEW: Button controls for slider
+    const btnMinus = document.getElementById("decreaseRate");
+    const btnPlus = document.getElementById("increaseRate");
+
+    if (btnMinus && btnPlus) {
+      btnMinus.addEventListener("click", () => updateInterestRate(interestRate - 0.5));
+      btnPlus.addEventListener("click", () => updateInterestRate(interestRate + 0.05));
+    }
 
     // Language toggle
     elements.langBtn.addEventListener("click", toggleLanguage);
