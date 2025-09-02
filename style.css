@@ -35,7 +35,7 @@ body {
 
 button {
     margin: 0.3rem;
-    padding: 1rem 1rem;
+    padding: 1rem;
     border: none;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.2);
@@ -47,7 +47,11 @@ button {
 
 button:hover {
     background: rgba(255, 255, 255, 0.4);
-    padding: 0rem 0.5rem;
+}
+
+button:focus {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
 }
 
 .lang-btn {
@@ -70,39 +74,39 @@ table td.number {
     text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 }
 
-table td,
-table th {
-    padding: 0.5rem;
-    text-align: center;
-}
-
-/* Make table responsive on mobile */
 table {
     width: 100%;
     border-collapse: collapse;
 }
 
+table th,
+table td {
+    padding: 0.5rem;
+    text-align: center;
+    border: 1px solid #4b5563;
+}
+
 table td.number {
     word-break: break-word;
-    /* Allow long numbers to wrap */
     white-space: normal;
-    /* Ensure text wraps within cells */
 }
 
 @media (max-width: 640px) {
     table {
         font-size: 0.75rem;
-        /* Smaller font size on mobile */
     }
 
-    table td,
-    table th {
+    table th,
+    table td {
         padding: 0.25rem;
-        /* Reduce padding on mobile */
     }
 
     table td.number {
         min-width: 60px;
-        /* Minimum width to prevent excessive squeezing */
     }
+}
+
+/* Improve contrast for accessibility */
+body {
+    background-color: #1a1a1a;
 }

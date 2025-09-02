@@ -1,6 +1,11 @@
-Site en cours de construction
+# Tic-tac Dette Publique Française
+
+## A propos
+Ce projet suit la dette publique française en temps réel, offrant des informations sur sa croissance et son coût par citoyen ou contribuable. Il prend en charge les langues française et anglaise.
 
 ## Sources
 [Agence France Trésor](https://www.aft.gouv.fr/fr)
+Ministère de l'Économie et des Finances – Mars 2022, Wikimedia Commons
 
-Ministère de l'Économie et des Finances – Mars 2022, https://commons.wikimedia.org/wiki/File:Minist%C3%A8re_de_l%27%C3%89conomie_et_des_Finances_Mars_2022.jpg
+## Licence
+MIT License

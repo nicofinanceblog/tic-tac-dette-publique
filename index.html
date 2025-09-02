@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
   <head>
+  
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-2DX245NEFJ"></script>
     <script>
@@ -13,16 +14,34 @@
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Real-time tracker of French public debt with per capita and interest calculations." />
-    <meta name="keywords" content="French public debt, real-time debt tracker, finance" />
+    <meta name="description" content="Tracker en temps réel de la dette publique française avec calculs par habitant et par foyer fiscal. Données officielles actualisées." />
+    <meta name="keywords" content="dette publique française, tracker temps réel, finance publique, deficit" />
+  
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Tic-tac Dette Publique Française">
+    <meta property="og:description" content="Tracker en temps réel de la dette publique française" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/images/preview.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nicofinanceblog.github.io/tic-tac-dette-publique/">
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Tic-tac Dette Publique Française">
+    <meta name="twitter:description" content="Tracker en temps réel de la dette publique française">
+    <meta name="twitter:image" content="/images/preview.png">
+    
     <title>Dette publique française en temps réel</title>
+
     <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png" />
-    <link rel="manifest" href="/site.webmanifest">
+    <link rel="manifest" href="site.webmanifest">
+    
     <script src="https://cdn.tailwindcss.com"></script>    
+    
     <link rel="stylesheet" href="style.css" />
+  
   </head>
   <body class="text-white relative min-h-screen">
 
@@ -105,7 +124,6 @@
       </div>
     </div>
 
-
     <!-- Interest table -->
     <h2 id="interestTitle" class="text-xl font-semibold text-center mb-4">Coût de la charge de la dette (intérêts payés)</h2>
     <div class="overflow-x-auto w-full max-w-3xl mb-6">
@@ -173,6 +191,6 @@
     </div>
 
     <script src="script.js"></script>
-  
+
   </body>
 </html>

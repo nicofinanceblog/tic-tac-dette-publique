@@ -1,21 +1,20 @@
 const DebtApp = (() => {
   // --- Constants ---
   const CONFIG = {
-    CURRENT_DEBT_DATE: "2025-03-31",
+    DEBT_DATE: "2025-03-31",
+    DEBT_VALUE: 3_345_400_000_000,
+    DEBT_INCREASE_PER_MONTH: 13_000_000_000,
     POPULATION: 68_520_000,
     TAX_HOUSEHOLDS: 18_200_000,
-    CURRENT_DEBT_VALUE: 3_345_400_000_000,
-    DEBT_INCREASE_PER_MONTH: 13_000_000_000,
-    EXCHANGE_RATE: 1.1676,
     DEFAULT_LANG: "fr",
-    DEFAULT_RATE: 2.95,
+    AVERAGE_BORROWING_RATE: 1.95,
   };
 
   // --- State ---
   let baseDebt = 0;
   let perSecondDebtIncrease = 0;
   let lang = CONFIG.DEFAULT_LANG;
-  let interestRate = CONFIG.DEFAULT_RATE;
+  let interestRate = CONFIG.AVERAGE_BORROWING_RATE;
   let lastUpdate = 0;
 
   // --- DOM Elements ---
@@ -60,7 +59,12 @@ const DebtApp = (() => {
       perTaxpayingHousehold: "Dette par foyer fiscal imposable",
       perSecond: "Augmentation par seconde",
       perDay: "Augmentation par jour",
-      table: { period: "Par période", total: "Total", perCapita: "Par habitant", perHousehold: "Par foyer fiscal" },
+      table: {
+        period: "Par période",
+        total: "Total",
+        perCapita: "Par habitant",
+        perHousehold: "Par foyer fiscal",
+      },
       rows: ["Année", "Mois", "Jour"],
       langBtn: "English",
     },
@@ -72,7 +76,12 @@ const DebtApp = (() => {
       perTaxpayingHousehold: "Debt per taxpayer",
       perSecond: "Increase per second",
       perDay: "Increase per day",
-      table: { period: "Per period", total: "Total", perCapita: "Per capita", perHousehold: "Per taxpayer" },
+      table: {
+        period: "Per period",
+        total: "Total",
+        perCapita: "Per capita",
+        perHousehold: "Per taxpayer",
+      },
       rows: ["Year", "Month", "Day"],
       langBtn: "Français",
     },
@@ -83,13 +92,22 @@ const DebtApp = (() => {
       title: "Information sur la dette publique française",
       body: `
       <div>
-        <!-- <h3 class="text-lg font-semibold mb-2">À propos de ce site</h3> -->
         <p>Ce site suit la dette publique française en temps réel et son coût pour les citoyens.</p>
-        <p>Les chiffres sont basés sur des données gouvernementales officielles publiées par l'<a href="https://www.aft.gouv.fr/fr" target="_blank" class="text-blue-500 hover:underline">Agence France Trésor</a> et actualisées lorsque de nouvelles données sont disponibles.</p>
+        <p>Les chiffres sont basés sur des données gouvernementales officielles publiées par l'<a href="https://www.aft.gouv.fr/fr" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">Agence France Trésor</a> et actualisées lorsque de nouvelles données sont disponibles.</p>
+        <h3 class="text-lg font-semibold mb-2 mt-4">Comment se forme la dette publique ?</h3>
+        <p>
+          Chaque année, le déficit annuel est emprunté sur les marchés financiers et vient s’ajouter à la dette déjà accumulée lors des années antérieures.
+          La dette publique française est donc la somme de tous les déficits passés. La France n'a pas enregistré de surplus budgétaire depuis 1974 et augmente donc sa dette totale chaque année, depuis ${
+            new Date(CONFIG.DEBT_DATE).getFullYear() - 1974
+          } ans.<br>Tit-tac, tic-tac... 💣
+        </p>
         <h3 class="text-lg font-semibold mb-2 mt-4">Dernières données disponibles sur la dette</h3>
-        <p>Montant totale de la dette publique : ${new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(
-          CONFIG.CURRENT_DEBT_VALUE
-        )} en date du ${new Date(CONFIG.CURRENT_DEBT_DATE).toLocaleDateString("fr-FR")}</p>
+        <p>Montant total de la dette publique : ${new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(
+          CONFIG.DEBT_VALUE
+        )} en date du ${new Date(CONFIG.DEBT_DATE).toLocaleDateString("fr-FR")}</p>
+        <p>Taux d'emprunt global moyen : ${new Intl.NumberFormat("fr-FR", { style: "percent", maximumFractionDigits: 2 }).format(
+          CONFIG.AVERAGE_BORROWING_RATE / 100
+        )}</p>
         <p>Augmentation mensuelle moyenne de la dette : ${new Intl.NumberFormat("fr-FR", {
           style: "currency",
           currency: "EUR",
@@ -97,6 +115,8 @@ const DebtApp = (() => {
         }).format(CONFIG.DEBT_INCREASE_PER_MONTH)} par mois 🚀</p>
         <p>Population française: ${new Intl.NumberFormat("fr-FR", { style: "decimal", maximumFractionDigits: 0 }).format(CONFIG.POPULATION)}</p>
         <p>Foyers fiscaux imposables : ${new Intl.NumberFormat("fr-FR", { style: "decimal", maximumFractionDigits: 0 }).format(CONFIG.TAX_HOUSEHOLDS)}</p>
+        <h3 class="text-lg font-semibold mb-2 mt-4">Taux d'emprunt global moyen</h3>
+        <p>Quand on parle du taux d’intérêt moyen de la dette publique, il ne s’agit pas du taux qu’on verrait aujourd’hui si l’État empruntait à 10 ans. En réalité, l’État français a des milliers d’emprunts en cours, contractés à différents moments, pour des durées variées (2 ans, 10 ans... 30 ans). Chaque emprunt garde le taux qui était en vigueur au moment où il a été signé, jusqu'à son échéance. Par exemple, une obligation émise en 2016 peut encore coûter 0.5% par an alors qu'une obligation plus récente émise en 2025 va coûter 3.5% par an. Le taux moyen apparent mélange donc tous ces emprunts, anciens et récents. Il est calculé en divisant la somme des intérêts payés par l’État par le montant total de la dette.</p>
       </div>
     `,
     },
@@ -104,21 +124,31 @@ const DebtApp = (() => {
       title: "Information about French Public Debt",
       body: `
       <div>
-        <!-- <h3 class="text-lg font-semibold mb-2">About this site</h3> -->
         <p>This site tracks French public debt in real time and its cost to citizens.</p>
-        <p>The figures are based on official government data published by the <a href="https://www.aft.gouv.fr/en" target="_blank" class="text-blue-500 hover:underline">Agence France Trésor</a> and updated when new data becomes available.</p>
+        <p>The figures are based on official government data published by the 
+        <a href="https://www.aft.gouv.fr/en" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">
+        Agence France Trésor</a> and updated when new data becomes available.</p>
+        <h3 class="text-lg font-semibold mb-2 mt-4">How is public debt formed?</h3>
+        <p>
+          Each year, the annual deficit is borrowed from financial markets and added to the debt already accumulated in previous years.
+          French public debt is therefore the sum of all past deficits. France has not recorded a budget surplus since 1974 and has therefore been increasing its total debt every year since ${
+            new Date(CONFIG.DEBT_DATE).getFullYear() - 1974
+          } years.<br>Tick-tock, tick-tock... 💣
+        </p>
         <h3 class="text-lg font-semibold mb-2 mt-4">Latest available debt data</h3>
-        <p>Total public debt amount: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(
-          CONFIG.CURRENT_DEBT_VALUE * CONFIG.EXCHANGE_RATE
-        )} at the date of ${new Date(CONFIG.CURRENT_DEBT_DATE).toLocaleDateString("en-US")}</p>
-        <p>EUR/USD exchange rate: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 4 }).format(
-          CONFIG.EXCHANGE_RATE
+        <p>Total public debt amount: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(
+          CONFIG.DEBT_VALUE
+        )} at the date of ${new Date(CONFIG.DEBT_DATE).toLocaleDateString("en-US")}</p>
+        <p>Average overall borrowing rate: ${new Intl.NumberFormat("en-US", { style: "percent", maximumFractionDigits: 2 }).format(
+          CONFIG.AVERAGE_BORROWING_RATE / 100
         )}</p>
-        <p>Average monthly debt increase: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(
-          CONFIG.DEBT_INCREASE_PER_MONTH * CONFIG.EXCHANGE_RATE
+        <p>Average monthly debt increase: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(
+          CONFIG.DEBT_INCREASE_PER_MONTH
         )} per month 🚀</p>
         <p>French population: ${new Intl.NumberFormat("en-US", { style: "decimal", maximumFractionDigits: 0 }).format(CONFIG.POPULATION)}</p>
         <p>Taxpaying households: ${new Intl.NumberFormat("en-US", { style: "decimal", maximumFractionDigits: 0 }).format(CONFIG.TAX_HOUSEHOLDS)}</p>
+        <h3 class="text-lg font-semibold mb-2 mt-4">Average interest rate on debt</h3>
+        <p>When talking about the average interest rate of public debt, it is not the rate you would see today if the government borrowed at 10 years. In reality, the French government has thousands of ongoing loans, contracted at different times, for various durations (2 years, 10 years... 30 years). Each loan retains the rate that was in effect when it was signed until its maturity. For example, a bond issued in 2016 might still cost 0.5% per year, while a more recent bond issued in 2025 will cost 3.5% per year. The apparent average rate thus mixes all these loans, old and new. It is calculated by dividing the total interest paid by the government by the total amount of debt.</p>
       </div>
     `,
     },
@@ -128,14 +158,15 @@ const DebtApp = (() => {
   const formatCurrency = (value) => {
     const rounded = Math.round(value);
     const opts = { style: "currency", maximumFractionDigits: 0 };
-    return new Intl.NumberFormat(lang === "fr" ? "fr-FR" : "en-US", { ...opts, currency: lang === "fr" ? "EUR" : "USD" }).format(
-      lang === "fr" ? rounded : rounded * CONFIG.EXCHANGE_RATE
-    );
+    return new Intl.NumberFormat(lang === "fr" ? "fr-FR" : "en-US", {
+      ...opts,
+      currency: "EUR",
+    }).format(rounded);
   };
 
   const calculateInitialDebt = () => {
-    const diffMonths = (Date.now() - new Date(CONFIG.CURRENT_DEBT_DATE)) / (1000 * 60 * 60 * 24 * 30.44);
-    return CONFIG.CURRENT_DEBT_VALUE + diffMonths * CONFIG.DEBT_INCREASE_PER_MONTH;
+    const diffMonths = (Date.now() - new Date(CONFIG.DEBT_DATE)) / (1000 * 60 * 60 * 24 * 30.44);
+    return CONFIG.DEBT_VALUE + diffMonths * CONFIG.DEBT_INCREASE_PER_MONTH;
   };
 
   const calculatePerSecondDebtIncrease = () => CONFIG.DEBT_INCREASE_PER_MONTH / (30.44 * 24 * 3600);
@@ -170,10 +201,10 @@ const DebtApp = (() => {
 
     baseDebt += perSecondDebtIncrease * delta;
 
-    const displayDebt = lang === "fr" ? baseDebt : baseDebt * CONFIG.EXCHANGE_RATE;
+    const displayDebt = baseDebt;
     const perCapita = displayDebt / CONFIG.POPULATION;
     const perHousehold = displayDebt / CONFIG.TAX_HOUSEHOLDS;
-    const perSecond = lang === "fr" ? perSecondDebtIncrease : perSecondDebtIncrease * CONFIG.EXCHANGE_RATE;
+    const perSecond = perSecondDebtIncrease;
     const perDay = perSecond * 86400;
 
     // Update cards
@@ -206,7 +237,7 @@ const DebtApp = (() => {
     const { period, total, perCapita: pc, perHousehold: ph } = translations[lang].table;
     [h1.textContent, h2.textContent, h3.textContent, h4.textContent] = [period, total, pc, ph];
 
-    requestAnimationFrame(tick);
+    setTimeout(() => requestAnimationFrame(tick), 100);
   };
 
   // --- Language toggle ---
@@ -261,7 +292,7 @@ const DebtApp = (() => {
     const btnPlus = document.getElementById("increaseRate");
 
     if (btnMinus && btnPlus) {
-      btnMinus.addEventListener("click", () => updateInterestRate(interestRate - 0.5));
+      btnMinus.addEventListener("click", () => updateInterestRate(interestRate - 0.05));
       btnPlus.addEventListener("click", () => updateInterestRate(interestRate + 0.05));
     }
 
