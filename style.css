@@ -4,6 +4,7 @@ body {
     color: white;
     text-align: center;
     overflow: visible;
+    background-color: #1a1a1a;
 }
 
 #background {
@@ -104,9 +105,4 @@ table td.number {
     table td.number {
         min-width: 60px;
     }
-}
-
-/* Improve contrast for accessibility */
-body {
-    background-color: #1a1a1a;
 }

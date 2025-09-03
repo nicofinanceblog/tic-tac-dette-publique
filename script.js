@@ -53,7 +53,7 @@ const DebtApp = (() => {
   const translations = {
     fr: {
       title: "Dette publique française en temps réel",
-      interestTitle: () => "Coût de la charge de la dette (intérêts payés)",
+      interestTitle: (interestRate) => `Coût de la charge de la dette avec un taux d'intérêt moyen à ${interestRate.toFixed(2)}%`,
       interestLabel: "Taux d'intérêt moyen sur la dette française",
       perCapita: "Dette par habitant",
       perTaxpayingHousehold: "Dette par foyer fiscal imposable",
@@ -70,7 +70,7 @@ const DebtApp = (() => {
     },
     en: {
       title: "French Public Debt in Real Time",
-      interestTitle: () => "Cost of the debt (interest paid)",
+      interestTitle: (interestRate) => `Cost of the debt with an average interest rate of ${interestRate.toFixed(2)}%`,
       interestLabel: "Average interest rate on French debt",
       perCapita: "Debt per capita",
       perTaxpayingHousehold: "Debt per taxpayer",
@@ -93,7 +93,7 @@ const DebtApp = (() => {
       body: `
       <div>
         <p>Ce site suit la dette publique française en temps réel et son coût pour les citoyens.</p>
-        <p>Les chiffres sont basés sur des données gouvernementales officielles publiées par l'<a href="https://www.aft.gouv.fr/fr" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">Agence France Trésor</a> et actualisées lorsque de nouvelles données sont disponibles.</p>
+        <p class="mt-2">Les chiffres sont basés sur des données gouvernementales officielles publiées par l'<a href="https://www.aft.gouv.fr/fr" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">Agence France Trésor</a> et actualisées lorsque de nouvelles données sont disponibles.</p>
         <h3 class="text-lg font-semibold mb-2 mt-4">Comment se forme la dette publique ?</h3>
         <p>
           Chaque année, le déficit annuel est emprunté sur les marchés financiers et vient s’ajouter à la dette déjà accumulée lors des années antérieures.
@@ -116,41 +116,51 @@ const DebtApp = (() => {
         <p>Population française: ${new Intl.NumberFormat("fr-FR", { style: "decimal", maximumFractionDigits: 0 }).format(CONFIG.POPULATION)}</p>
         <p>Foyers fiscaux imposables : ${new Intl.NumberFormat("fr-FR", { style: "decimal", maximumFractionDigits: 0 }).format(CONFIG.TAX_HOUSEHOLDS)}</p>
         <h3 class="text-lg font-semibold mb-2 mt-4">Taux d'emprunt global moyen</h3>
-        <p>Quand on parle du taux d’intérêt moyen de la dette publique, il ne s’agit pas du taux qu’on verrait aujourd’hui si l’État empruntait à 10 ans. En réalité, l’État français a des milliers d’emprunts en cours, contractés à différents moments, pour des durées variées (2 ans, 10 ans... 30 ans). Chaque emprunt garde le taux qui était en vigueur au moment où il a été signé, jusqu'à son échéance. Par exemple, une obligation émise en 2016 peut encore coûter 0.5% par an alors qu'une obligation plus récente émise en 2025 va coûter 3.5% par an. Le taux moyen apparent mélange donc tous ces emprunts, anciens et récents. Il est calculé en divisant la somme des intérêts payés par l’État par le montant total de la dette.</p>
+        <p>Lorsqu’on évoque le taux d’intérêt moyen de la dette publique, il ne s’agit pas du taux qu’obtiendrait l’État aujourd’hui en empruntant à 10 ans.</p>
+        <p class="mt-2">En réalité, l’État français a des milliers d’emprunts en cours, contractés à différents époques, pour des durées variées,  2 ans, 10 ans, 30 ans. Chaque emprunt conserve jusqu’à son échéance le taux en vigueur au moment de son émission. Ainsi, une obligation émise en 2016 peut encore coûter 0.5% par an, tandis qu’une obligation récente, émise en 2025, supportera plutôt un taux de 3.5% par an.</p>
+        <p class="mt-2">Le taux moyen apparent résulte donc de la combinaison de toutes ces dettes, anciennes et nouvelles. Il se calcule en rapportant la somme des intérêts versés par l’État au montant total de la dette.</p>
+        <p class="mt-2">Cette moyenne évolue lentement. Elle met du temps à refléter les hausses ou les baisses des taux de marché, car l’inertie est importante.</p>
+        <p class="mt-2">Même si les taux venaient Aujourd'hui à se stabiliser à 3.5%, les anciens emprunts contractés à des conditions plus favorables devront progressivement être refinancés aux conditions de marché actuelles, bien plus onéreuses. Mécaniquement, la charge de la dette augmentera donc de façon certaine et durable.</p>
+        <p class="mt-2">Si l’on ajoute à cela un déficit budgétaire qui ne cesse de se creuser, la soutenabilité de la dette publique n’est plus possible.</p>
       </div>
     `,
     },
     en: {
       title: "Information about French Public Debt",
       body: `
-      <div>
-        <p>This site tracks French public debt in real time and its cost to citizens.</p>
-        <p>The figures are based on official government data published by the 
-        <a href="https://www.aft.gouv.fr/en" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">
-        Agence France Trésor</a> and updated when new data becomes available.</p>
-        <h3 class="text-lg font-semibold mb-2 mt-4">How is public debt formed?</h3>
-        <p>
-          Each year, the annual deficit is borrowed from financial markets and added to the debt already accumulated in previous years.
-          French public debt is therefore the sum of all past deficits. France has not recorded a budget surplus since 1974 and has therefore been increasing its total debt every year since ${
-            new Date(CONFIG.DEBT_DATE).getFullYear() - 1974
-          } years.<br>Tick-tock, tick-tock... 💣
-        </p>
-        <h3 class="text-lg font-semibold mb-2 mt-4">Latest available debt data</h3>
-        <p>Total public debt amount: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(
-          CONFIG.DEBT_VALUE
-        )} at the date of ${new Date(CONFIG.DEBT_DATE).toLocaleDateString("en-US")}</p>
-        <p>Average overall borrowing rate: ${new Intl.NumberFormat("en-US", { style: "percent", maximumFractionDigits: 2 }).format(
-          CONFIG.AVERAGE_BORROWING_RATE / 100
-        )}</p>
-        <p>Average monthly debt increase: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(
-          CONFIG.DEBT_INCREASE_PER_MONTH
-        )} per month 🚀</p>
-        <p>French population: ${new Intl.NumberFormat("en-US", { style: "decimal", maximumFractionDigits: 0 }).format(CONFIG.POPULATION)}</p>
-        <p>Taxpaying households: ${new Intl.NumberFormat("en-US", { style: "decimal", maximumFractionDigits: 0 }).format(CONFIG.TAX_HOUSEHOLDS)}</p>
-        <h3 class="text-lg font-semibold mb-2 mt-4">Average interest rate on debt</h3>
-        <p>When talking about the average interest rate of public debt, it is not the rate you would see today if the government borrowed at 10 years. In reality, the French government has thousands of ongoing loans, contracted at different times, for various durations (2 years, 10 years... 30 years). Each loan retains the rate that was in effect when it was signed until its maturity. For example, a bond issued in 2016 might still cost 0.5% per year, while a more recent bond issued in 2025 will cost 3.5% per year. The apparent average rate thus mixes all these loans, old and new. It is calculated by dividing the total interest paid by the government by the total amount of debt.</p>
-      </div>
-    `,
+        <div>
+          <p>This site tracks French public debt in real time and its cost to citizens.</p>
+          <p>The figures are based on official government data published by the 
+          <a href="https://www.aft.gouv.fr/en" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">
+          Agence France Trésor</a> and updated when new data becomes available.</p>
+          <h3 class="text-lg font-semibold mb-2 mt-4">How is public debt formed?</h3>
+          <p>
+            Each year, the annual deficit is borrowed from financial markets and added to the debt already accumulated in previous years.
+            French public debt is therefore the sum of all past deficits. France has not recorded a budget surplus since 1974 and has therefore been increasing its total debt every year since ${
+              new Date(CONFIG.DEBT_DATE).getFullYear() - 1974
+            } years.<br>Tick-tock, tick-tock... 💣
+          </p>
+          <h3 class="text-lg font-semibold mb-2 mt-4">Latest available debt data</h3>
+          <p>Total public debt amount: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(
+            CONFIG.DEBT_VALUE
+          )} at the date of ${new Date(CONFIG.DEBT_DATE).toLocaleDateString("en-US")}</p>
+          <p>Average overall borrowing rate: ${new Intl.NumberFormat("en-US", { style: "percent", maximumFractionDigits: 2 }).format(
+            CONFIG.AVERAGE_BORROWING_RATE / 100
+          )}</p>
+          <p>Average monthly debt increase: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(
+            CONFIG.DEBT_INCREASE_PER_MONTH
+          )} per month 🚀</p>
+          <p>French population: ${new Intl.NumberFormat("en-US", { style: "decimal", maximumFractionDigits: 0 }).format(CONFIG.POPULATION)}</p>
+          <p>Taxpaying households: ${new Intl.NumberFormat("en-US", { style: "decimal", maximumFractionDigits: 0 }).format(CONFIG.TAX_HOUSEHOLDS)}</p>
+          <h3 class="text-lg font-semibold mb-2 mt-4">Average interest rate on debt</h3>
+          <p>When we talk about the average interest rate on public debt, it does not refer to the rate the State would obtain today by borrowing over 10 years.</p>
+          <p class="mt-2">In reality, the French State has thousands of loans outstanding, contracted at different times, for varying durations, 2 years, 10 years, 30 years. Each loan keeps, until maturity, the interest rate in effect at the time it was issued. Thus, a bond issued in 2016 may still cost 0.5% per year, while a more recent bond, issued in 2025, will rather bear a rate of 3.5% per year.</p>
+          <p class="mt-2">The apparent average rate therefore results from the combination of all these debts, old and new. It is calculated by relating the total interest paid by the State to the overall amount of debt.</p>
+          <p class="mt-2">This average changes slowly. It takes time to reflect increases or decreases in market rates, because the inertia is significant.</p>
+          <p class="mt-2">Even if rates were to stabilize today at 3.5%, the old loans contracted under more favorable conditions will gradually have to be refinanced under current market conditions, which are much more expensive. Mechanically, the debt burden will therefore rise in a certain and lasting way.</p>
+          <p class="mt-2">If we add to this a budget deficit that continues to deepen, the sustainability of public debt becomes impossible.</p>
+        </div>
+      `,
     },
   };
 
