@@ -93,7 +93,7 @@ const DebtApp = (() => {
       body: `
       <div>
         <p>Ce site suit la dette publique française en temps réel et son coût pour les citoyens.</p>
-        <p class="mt-2">Les chiffres sont basés sur des données gouvernementales officielles publiées par l'<a href="https://www.aft.gouv.fr/fr" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">Agence France Trésor</a> et actualisées lorsque de nouvelles données sont disponibles.</p>
+        <p class="mt-2">Les chiffres sont basés sur des données gouvernementales officielles publiées et actualisées lorsque de nouvelles données sont disponibles.</p>
         <h3 class="text-lg font-semibold mb-2 mt-4">Comment se forme la dette publique ?</h3>
         <p>
           Chaque année, le déficit annuel est emprunté sur les marchés financiers et vient s’ajouter à la dette déjà accumulée lors des années antérieures.
@@ -130,9 +130,7 @@ const DebtApp = (() => {
       body: `
         <div>
           <p>This site tracks French public debt in real time and its cost to citizens.</p>
-          <p>The figures are based on official government data published by the 
-          <a href="https://www.aft.gouv.fr/en" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">
-          Agence France Trésor</a> and updated when new data becomes available.</p>
+          <p>The figures are based on official government data published and updated when new data becomes available.</p>
           <h3 class="text-lg font-semibold mb-2 mt-4">How is public debt formed?</h3>
           <p>
             Each year, the annual deficit is borrowed from financial markets and added to the debt already accumulated in previous years.
