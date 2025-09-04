@@ -120,7 +120,7 @@ const DebtApp = (() => {
         <p class="mt-2">En réalité, l’État français a des milliers d’emprunts en cours, contractés à différents époques, pour des durées variées,  2 ans, 10 ans, 30 ans. Chaque emprunt conserve jusqu’à son échéance le taux en vigueur au moment de son émission. Ainsi, une obligation émise en 2016 peut encore coûter 0.5% par an, tandis qu’une obligation récente, émise en 2025, supportera plutôt un taux de 3.5% par an.</p>
         <p class="mt-2">Le taux moyen apparent résulte donc de la combinaison de toutes ces dettes, anciennes et nouvelles. Il se calcule en rapportant la somme des intérêts versés par l’État au montant total de la dette.</p>
         <p class="mt-2">Cette moyenne évolue lentement. Elle met du temps à refléter les hausses ou les baisses des taux de marché, car l’inertie est importante.</p>
-        <p class="mt-2">Même si les taux venaient Aujourd'hui à se stabiliser à 3.5%, les anciens emprunts contractés à des conditions plus favorables devront progressivement être refinancés aux conditions de marché actuelles, bien plus onéreuses. Mécaniquement, la charge de la dette augmentera donc de façon certaine et durable.</p>
+        <p class="mt-2">Même si les taux venaient aujourd'hui à se stabiliser à 3.5%, les anciens emprunts contractés à des conditions plus favorables devront progressivement être refinancés aux conditions de marché actuelles, bien plus onéreuses. Mécaniquement, la charge de la dette augmentera donc de façon certaine et durable.</p>
         <p class="mt-2">Si l’on ajoute à cela un déficit budgétaire qui ne cesse de se creuser, la soutenabilité de la dette publique n’est plus possible.</p>
       </div>
     `,
@@ -285,11 +285,23 @@ const DebtApp = (() => {
     elements.interestValue.textContent = `${interestRate.toFixed(2)}%`;
 
     const updateInterestRate = (val) => {
+      const oldRate = interestRate;
       interestRate = Math.max(0, val); // prevent negatives
       elements.interestValue.textContent = `${interestRate.toFixed(2)}%`;
       elements.interestRate.value = interestRate;
       elements.interestRate.setAttribute("aria-valuenow", interestRate.toFixed(2));
       lastUpdate = 0;
+
+      // Add flash effect depending on direction
+      const table = elements.interestTableBody.closest("table");
+      table.classList.remove("table-flash-green", "table-flash-red"); // reset
+      void table.offsetWidth; // force reflow
+
+      if (interestRate > oldRate) {
+        table.classList.add("table-flash-red");
+      } else if (interestRate < oldRate) {
+        table.classList.add("table-flash-green");
+      }
     };
 
     elements.interestRate.addEventListener(

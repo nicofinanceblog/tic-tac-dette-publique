@@ -106,3 +106,34 @@ table td.number {
         min-width: 60px;
     }
 }
+
+/* Flash animations */
+@keyframes flashGreen {
+    0% {
+        background-color: rgba(34, 197, 94, 0.6);
+    }
+
+    /* Tailwind green-500 */
+    100% {
+        background-color: transparent;
+    }
+}
+
+@keyframes flashRed {
+    0% {
+        background-color: rgba(239, 68, 68, 0.6);
+    }
+
+    /* Tailwind red-500 */
+    100% {
+        background-color: transparent;
+    }
+}
+
+.table-flash-green {
+    animation: flashGreen 0.8s ease-out;
+}
+
+.table-flash-red {
+    animation: flashRed 0.8s ease-out;
+}
