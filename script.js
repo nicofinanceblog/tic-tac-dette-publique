@@ -53,7 +53,7 @@ const DebtApp = (() => {
   const translations = {
     fr: {
       title: "Dette publique française en temps réel",
-      interestTitle: (interestRate) => `Coût de la charge de la dette avec un taux d'intérêt moyen à ${interestRate.toFixed(2)}%`,
+      interestTitle: (interestRate) => `Coût des seuls intérêts à payer sur la dette à ${interestRate.toFixed(2)}%`,
       interestLabel: "Taux d'intérêt moyen sur la dette française",
       perCapita: "Dette par habitant",
       perTaxpayingHousehold: "Dette par foyer fiscal imposable",
@@ -70,7 +70,7 @@ const DebtApp = (() => {
     },
     en: {
       title: "French Public Debt in Real Time",
-      interestTitle: (interestRate) => `Cost of the debt with an average interest rate of ${interestRate.toFixed(2)}%`,
+      interestTitle: (interestRate) => `Cost of interest only on debt at ${interestRate.toFixed(2)}%`,
       interestLabel: "Average interest rate on French debt",
       perCapita: "Debt per capita",
       perTaxpayingHousehold: "Debt per taxpayer",
