@@ -334,8 +334,8 @@ const DebtApp = (() => {
     const btnPlus = document.getElementById("increaseRate");
 
     if (btnMinus && btnPlus) {
-      btnMinus.addEventListener("click", () => updateInterestRate(interestRate - 0.05));
-      btnPlus.addEventListener("click", () => updateInterestRate(interestRate + 0.05));
+      btnMinus.addEventListener("click", () => updateInterestRate(interestRate - 0.01));
+      btnPlus.addEventListener("click", () => updateInterestRate(interestRate + 0.01));
     }
 
     // Language toggle
