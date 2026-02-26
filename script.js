@@ -11,7 +11,6 @@ const DebtApp = (() => {
   //   AVERAGE_BORROWING_RATE: 1.95,
   // };
 
-
   //   const CONFIG = {
   //   DEBT_DATE: "2025-06-30",
   //   DEBT_VALUE: 3_416_302_140_000,
@@ -35,9 +34,11 @@ const DebtApp = (() => {
   // --- State ---
   let baseDebt = 0;
   let perSecondDebtIncrease = 0;
-  let lang = CONFIG.DEFAULT_LANG;
+  let lang = urlLang === "en" || urlLang === "fr" ? urlLang : CONFIG.DEFAULT_LANG;
   let interestRate = CONFIG.AVERAGE_BORROWING_RATE;
   let lastUpdate = 0;
+
+  const urlLang = new URLSearchParams(window.location.search).get("lang");
 
   // --- DOM Elements ---
   const elements = Object.fromEntries(
@@ -60,7 +61,7 @@ const DebtApp = (() => {
       "labelPerHousehold",
       "labelPerSecond",
       "labelPerDay",
-    ].map((id) => [id, document.getElementById(id)])
+    ].map((id) => [id, document.getElementById(id)]),
   );
 
   const modal = {
@@ -127,10 +128,10 @@ const DebtApp = (() => {
         </p>
         <h3 class="text-lg font-semibold mb-2 mt-4">Dernières données disponibles sur la dette</h3>
         <p>Montant total de la dette publique : ${new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(
-          CONFIG.DEBT_VALUE
+          CONFIG.DEBT_VALUE,
         )} en date du ${new Date(CONFIG.DEBT_DATE).toLocaleDateString("fr-FR")}</p>
         <p>Taux d'emprunt global moyen : ${new Intl.NumberFormat("fr-FR", { style: "percent", maximumFractionDigits: 2 }).format(
-          CONFIG.AVERAGE_BORROWING_RATE / 100
+          CONFIG.AVERAGE_BORROWING_RATE / 100,
         )}</p>
         <p>Augmentation mensuelle moyenne de la dette : ${new Intl.NumberFormat("fr-FR", {
           style: "currency",
@@ -164,13 +165,13 @@ const DebtApp = (() => {
           </p>
           <h3 class="text-lg font-semibold mb-2 mt-4">Latest available debt data</h3>
           <p>Total public debt amount: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(
-            CONFIG.DEBT_VALUE
+            CONFIG.DEBT_VALUE,
           )} at the date of ${new Date(CONFIG.DEBT_DATE).toLocaleDateString("en-US")}</p>
           <p>Average overall borrowing rate: ${new Intl.NumberFormat("en-US", { style: "percent", maximumFractionDigits: 2 }).format(
-            CONFIG.AVERAGE_BORROWING_RATE / 100
+            CONFIG.AVERAGE_BORROWING_RATE / 100,
           )}</p>
           <p>Average monthly debt increase: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(
-            CONFIG.DEBT_INCREASE_PER_MONTH
+            CONFIG.DEBT_INCREASE_PER_MONTH,
           )} per month 🚀</p>
           <p>French population: ${new Intl.NumberFormat("en-US", { style: "decimal", maximumFractionDigits: 0 }).format(CONFIG.POPULATION)}</p>
           <p>Taxpaying households: ${new Intl.NumberFormat("en-US", { style: "decimal", maximumFractionDigits: 0 }).format(CONFIG.TAX_HOUSEHOLDS)}</p>
@@ -260,7 +261,7 @@ const DebtApp = (() => {
         <td class="border border-gray-600 px-2 py-1 number">${formatCurrency(val)}</td>
         <td class="border border-gray-600 px-2 py-1 number">${formatCurrency(val / CONFIG.POPULATION)}</td>
         <td class="border border-gray-600 px-2 py-1 number">${formatCurrency(val / CONFIG.TAX_HOUSEHOLDS)}</td>
-      </tr>`
+      </tr>`,
       )
       .join("");
 
@@ -270,14 +271,14 @@ const DebtApp = (() => {
   // --- Table headers ---
   const updateTableHeaders = () => {
     const { period, total, perCapita: pc, perHousehold: ph } = translations[lang].table;
-    [period, total, pc, ph].forEach((text, i) => { tableHeaders[i].textContent = text; });
+    [period, total, pc, ph].forEach((text, i) => {
+      tableHeaders[i].textContent = text;
+    });
   };
 
-  // --- Language toggle ---
-  const toggleLanguage = () => {
-    lang = lang === "fr" ? "en" : "fr";
+  // --- Language apply ---
+  const applyLanguage = () => {
     const t = translations[lang];
-
     elements.title.textContent = t.title;
     elements.interestLabel.textContent = t.interestLabel;
     elements.interestTitle.textContent = t.interestTitle(interestRate);
@@ -291,6 +292,15 @@ const DebtApp = (() => {
     updateTableHeaders();
   };
 
+  // --- Language toggle ---
+  const toggleLanguage = () => {
+    lang = lang === "fr" ? "en" : "fr";
+    const url = new URL(window.location);
+    url.searchParams.set("lang", lang);
+    history.replaceState(null, "", url);
+    applyLanguage();
+  };
+
   // --- Initialization ---
   const init = () => {
     if (!Object.values(elements).every(Boolean)) {
@@ -300,7 +310,7 @@ const DebtApp = (() => {
 
     baseDebt = calculateInitialDebt();
     perSecondDebtIncrease = calculatePerSecondDebtIncrease();
-    updateTableHeaders();
+    applyLanguage();
 
     // Interest slider
     elements.interestRate.value = interestRate;
@@ -328,7 +338,7 @@ const DebtApp = (() => {
 
     elements.interestRate.addEventListener(
       "input",
-      debounce((e) => updateInterestRate(parseFloat(e.target.value) || 0), 100)
+      debounce((e) => updateInterestRate(parseFloat(e.target.value) || 0), 100),
     );
 
     // NEW: Button controls for slider
