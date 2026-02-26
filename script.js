@@ -32,13 +32,13 @@ const DebtApp = (() => {
   };
 
   // --- State ---
+  const urlLang = new URLSearchParams(window.location.search).get("lang");
+
   let baseDebt = 0;
   let perSecondDebtIncrease = 0;
   let lang = urlLang === "en" || urlLang === "fr" ? urlLang : CONFIG.DEFAULT_LANG;
   let interestRate = CONFIG.AVERAGE_BORROWING_RATE;
   let lastUpdate = 0;
-
-  const urlLang = new URLSearchParams(window.location.search).get("lang");
 
   // --- DOM Elements ---
   const elements = Object.fromEntries(
