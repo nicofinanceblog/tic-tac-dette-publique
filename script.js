@@ -71,6 +71,8 @@ const DebtApp = (() => {
     triggers: document.querySelectorAll(".help-trigger"),
   };
 
+  const tableHeaders = document.querySelectorAll("table thead th");
+
   // --- Translations ---
   const translations = {
     fr: {
@@ -262,12 +264,13 @@ const DebtApp = (() => {
       )
       .join("");
 
-    // Update headers
-    const [h1, h2, h3, h4] = elements.interestTableBody.closest("table").querySelectorAll("th");
-    const { period, total, perCapita: pc, perHousehold: ph } = translations[lang].table;
-    [h1.textContent, h2.textContent, h3.textContent, h4.textContent] = [period, total, pc, ph];
-
     setTimeout(() => requestAnimationFrame(tick), 100);
+  };
+
+  // --- Table headers ---
+  const updateTableHeaders = () => {
+    const { period, total, perCapita: pc, perHousehold: ph } = translations[lang].table;
+    [period, total, pc, ph].forEach((text, i) => { tableHeaders[i].textContent = text; });
   };
 
   // --- Language toggle ---
@@ -285,9 +288,7 @@ const DebtApp = (() => {
     elements.langBtnText.textContent = t.langBtn;
     elements.flagIcon.src = lang === "fr" ? "images/flag-us.svg" : "images/flag-fr.svg";
     elements.flagIcon.alt = lang.toUpperCase();
-
-    lastUpdate = 0;
-    requestAnimationFrame(tick);
+    updateTableHeaders();
   };
 
   // --- Initialization ---
@@ -299,6 +300,7 @@ const DebtApp = (() => {
 
     baseDebt = calculateInitialDebt();
     perSecondDebtIncrease = calculatePerSecondDebtIncrease();
+    updateTableHeaders();
 
     // Interest slider
     elements.interestRate.value = interestRate;
@@ -306,7 +308,7 @@ const DebtApp = (() => {
 
     const updateInterestRate = (val) => {
       const oldRate = interestRate;
-      interestRate = Math.max(0, val); // prevent negatives
+      interestRate = Math.min(15, Math.max(0, val));
       elements.interestValue.textContent = `${interestRate.toFixed(2)}%`;
       elements.interestRate.value = interestRate;
       elements.interestRate.setAttribute("aria-valuenow", interestRate.toFixed(2));
