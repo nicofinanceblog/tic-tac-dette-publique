@@ -68,6 +68,7 @@ button:hover {
 
 .card-number,
 table td.number {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";
     text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
